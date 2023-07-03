@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,46 @@ public class SellerDaoImplJDBC implements SellerDao {
 
 	@Override
 	public void insert(Seller obj) {
-		// TODO Auto-generated method stub
+		PreparedStatement st = null;
+		ResultSet rs = null;
+
+		try {
+
+			st = conn.prepareStatement("INSERT INTO seller " + "(Name, Email, BirthDate, BaseSalary, DepartmentId)"
+					+ "VALUES" + "(?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS
+			// Retorna o Id do novo vendedor inserido
+			);
+
+			st.setString(1, obj.getName());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, obj.getDepartment().getId());
+
+			int rowsAffect = st.executeUpdate();
+			// Testando se as linhas alteradas foram maiores do que ZERO
+			if (rowsAffect > 0) {
+				rs = st.getGeneratedKeys();
+				if (rs.next()) {
+
+					int id = rs.getInt(1);
+					// pegar o valor do ID gerado
+
+					obj.setId(id);
+
+					System.out.println("rowsAffect: " + rowsAffect + " Id " + id);
+					Db.closeResultSet(rs);
+				} else {
+					throw new DbException("Unexpect error! No rows affected");
+				}
+			}
+
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			Db.closeStatement(st);
+
+		}
 
 	}
 
