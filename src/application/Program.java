@@ -1,6 +1,5 @@
 package application;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import model.dao.DaoFactory;
@@ -24,6 +23,16 @@ public class Program {
 
 		for (Seller obj : listSeller) {
 			System.out.println(obj);
+		}
+
+		System.out.println();
+
+		System.out.println("===TEST : seller findAll ====");
+
+		List<Seller> listaSellerAll = sellerDao.findAll();
+
+		for (Seller list : listaSellerAll) {
+			System.out.println(list);
 		}
 
 	}
